@@ -7,21 +7,7 @@ Designed like a real startup system with separate backend services, secure authe
 
 # 🌍 Live Demo
 
-**App:** [https://lastminute-app-frontend.onrender.com](https://lastminute-app-frontend.onrender.com)
 
-> ⚠️ Hosted on Render's free tier — services spin down after ~15 minutes of inactivity.
-> The **first** request after a period of inactivity can take 30–60 seconds while the service wakes up. Subsequent requests are fast.
-
-| Service          | Live URL                                                                |
-| ---------------- | ------------------------------------------------------------------------ |
-| Frontend          | https://lastminute-app-frontend.onrender.com                            |
-| Auth Service      | https://auth-service-cv37.onrender.com/health                           |
-| Listing Service   | https://listing-service-pqb0.onrender.com/health                        |
-| Booking Service   | https://booking-service-df8a.onrender.com/health                        |
-| Payment Service   | https://payment-service-qvb5.onrender.com/health                        |
-| Database          | Postgres, hosted on [Neon](https://neon.tech)                            |
-
----
 
 # 📌 Project Overview
 
