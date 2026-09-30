@@ -216,7 +216,6 @@ Currently live on:
 * **Backend (4 services)** → Render (Docker Web Services)
 * **Database** → Neon (managed Postgres)
 
-See the [Live Demo](#-live-demo) section above for links.
 
 This project can also be deployed on:
 
