@@ -1,77 +1,60 @@
 # 🚀 Last Minute
 
-A **production-grade full-stack last-minute booking platform** built with a **microservices architecture**.
-Designed like a real startup system with separate backend services, secure authentication, scalable infrastructure, and a modern frontend.
+A full-stack last-minute booking platform built with a **microservices architecture**: separate backend services for authentication, listings, bookings and payments, plus a React frontend.
 
 ---
-
-
-
-
 
 # 📌 Project Overview
 
 Last Minute allows users to:
 
-* Register / Login securely
-* Create and manage listings
-* Book available listings instantly
-* Prevent double bookings
-* Cancel bookings
+* Register and log in securely
+* Create and manage listings (sellers)
+* Search listings and check availability
+* Book available listings and cancel bookings
+* Verify guest identity by uploading ID documents
 * Make payments
-* Use a responsive frontend interface
+* Save listings to a wishlist
+* View buyer and seller dashboards
 
-This project was built to simulate a **real-world scalable booking platform** similar to Airbnb / last-minute rental systems.
+The project simulates a real-world booking platform similar to Airbnb or last-minute rental systems.
 
 ---
 
 # 🏗️ Architecture
 
-## Backend (Microservices)
+| Service         | Port | Description                                              |
+| --------------- | ---- | -------------------------------------------------------- |
+| Auth Service    | 4001 | Registration, login, JWT auth, user profile              |
+| Listing Service | 4002 | Create, search and manage listings, availability, stats  |
+| Booking Service | 4003 | Bookings, pricing, eligibility, document verification    |
+| Payment Service | 4004 | Payment creation and status (Stripe, with a mock mode)   |
+| PostgreSQL      | 5432 | Main relational database                                 |
 
-| Service         | Port | Description                        |
-| --------------- | ---- | ---------------------------------- |
-| Auth Service    | 4001 | User registration, login, JWT auth |
-| Listing Service | 4002 | Create & manage listings           |
-| Booking Service | 4003 | Create/cancel bookings             |
-| Payment Service | 4004 | Payment processing                 |
-| PostgreSQL      | 5432 | Main relational database           |
-| Redis           | 6379 | Cache / Idempotency / Sessions     |
+The services talk to each other over HTTP (for example, the Listing and Payment services call the Booking service). Each service exposes a `/health` endpoint.
 
 ---
 
 # 🛠️ Tech Stack
 
-## Frontend
+**Frontend:** React 19, Vite, Tailwind CSS, React Router, Zustand, Axios, Recharts, Framer Motion
 
-* React.js
-* Axios
-* React Router
-* Tailwind CSS / CSS
+**Backend:** Node.js, Express.js, PostgreSQL, JWT authentication, bcrypt
 
-## Backend
+**Verification:** Sharp (image processing), Tesseract OCR
 
-* Node.js
-* Express.js
-* JWT Authentication
-* bcrypt
-* Redis
-* PostgreSQL
+**Payments:** Stripe (runs in mock mode when no key is set)
 
-## DevOps / Infra
-
-* Docker
-* Docker Compose
-* GitHub
-* Vercel / AWS Ready
+**DevOps:** Docker, Docker Compose, Nginx
 
 ---
 
 # 📁 Folder Structure
 
-```bash id="x2s1ap"
-LastMinute/
+```bash
+TheLastMinuteApp/
 │── frontend/
+│   └── web/
 │── services/
 │   ├── auth-service/
 │   ├── listing-service/
@@ -80,7 +63,7 @@ LastMinute/
 │── db/
 │   └── init.sql
 │── docker-compose.yml
-│── .gitignore
+│── .env.example
 │── README.md
 ```
 
@@ -88,88 +71,94 @@ LastMinute/
 
 # 🔐 Features
 
-## ✅ Authentication
+## Authentication
+* Register and log in
+* JWT token generation and protected routes
+* Password hashing with bcrypt
+* Buyer and seller roles
 
-* Register users
-* Login users
-* JWT token generation
-* Protected routes
-* Password hashing
-
-## ✅ Listings
-
-* Create listing
-* View listings
+## Listings
+* Create and manage listings
+* Search and categories
 * Availability management
+* Seller dashboard stats
 
-## ✅ Booking Engine
+## Bookings
+* Availability checking and price calculation
+* Eligibility checks
+* Book and cancel
+* Transaction-based booking logic
+* Wishlist
+* Buyer dashboard stats
 
-* Book listing
-* Cancel booking
-* Prevent duplicate booking
-* Transaction-safe logic
-* Row locking (`FOR UPDATE`)
-* Idempotent booking requests
+## Guest Verification
+* Document upload
+* Image processing with Sharp
+* OCR text extraction with Tesseract
 
-## ✅ Payments
+## Payments
+* Payment creation and status tracking tied to bookings
+* Stripe integration with mock mode for development
 
-* Payment service integration
-* Ready for Stripe / Razorpay expansion
-
-## ✅ Frontend
-
+## Frontend
 * Responsive UI
 * Authentication flow
-* Listings page
-* Booking page
-* Payment flow
-
----
-
-# 🧠 Advanced Backend Concepts Used
-
-* Microservices Architecture
-* Database Transactions
-* Race Condition Prevention
-* Redis Caching
-* Idempotency Keys
-* Secure JWT Auth
-* Docker Networking
-* Scalable Service Separation
+* Listings, booking and payment pages
+* Buyer and seller dashboards
 
 ---
 
 # ⚙️ Local Setup
 
-## 1️⃣ Clone Repository
+## 1. Clone the repository
 
-```bash id="l0n3wd"
-git clone https://github.com/yourusername/last-minute.git
-cd last-minute
+```bash
+git clone https://github.com/YashiUpmanyu25/TheLastMinuteApp.git
+cd TheLastMinuteApp
 ```
 
-## 2️⃣ Setup Environment Variables
+## 2. Run the backend and database
 
-Create `.env` files inside services.
+`docker-compose.yml` already contains the local environment variables, so you can start everything with:
 
-Example:
-
-```env id="7g0qol"
-PORT=4001
-POSTGRES_HOST=postgres
-POSTGRES_DB=lastminute
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-REDIS_HOST=redis
-REDIS_PORT=6379
-JWT_SECRET=your_secret
-```
-
-## 3️⃣ Run Project
-
-```bash id="a7m9pk"
+```bash
 docker compose up --build
 ```
+
+This starts PostgreSQL (and loads `db/init.sql`) and the four backend services on ports 4001-4004.
+
+## 3. Run the frontend
+
+```bash
+cd frontend/web
+npm install
+npm run dev
+```
+
+The frontend reads service URLs from these optional variables (defaults point to localhost):
+
+```env
+VITE_AUTH_SERVICE_URL=http://localhost:4001
+VITE_LISTING_SERVICE_URL=http://localhost:4002
+VITE_BOOKING_SERVICE_URL=http://localhost:4003
+VITE_PAYMENT_SERVICE_URL=http://localhost:4004
+```
+
+## Environment variables (backend)
+
+| Variable | Used by | Purpose |
+| -------- | ------- | ------- |
+| `PORT` | all services | Port to listen on |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | all services | PostgreSQL connection |
+| `DB_SSL` | all services | Set to `true` for managed databases that require SSL |
+| `JWT_SECRET` | all services | Must be the same on every service. **Use a long random value in production.** |
+| `JWT_REFRESH_SECRET` | auth | Refresh token signing |
+| `FRONTEND_URL` | backends | Allowed CORS origin |
+| `BOOKING_SERVICE_URL` | listing, payment | Booking service address |
+| `AUTH_SERVICE_URL` | payment | Auth service address |
+| `STRIPE_SECRET_KEY` | payment | Optional; mock mode without it |
+
+See `.env.example` for a template.
 
 ---
 
@@ -177,90 +166,64 @@ docker compose up --build
 
 ## Auth Service
 
-```http id="p6xj7s"
+```http
 POST /auth/register
 POST /auth/login
 GET  /auth/me
 ```
 
+Also: `/auth/profile`, `/auth/verification-status`, `/auth/check-verification`
+
 ## Listings
 
-```http id="w5t3kc"
+```http
 POST   /api/listings
 GET    /api/listings/search
 GET    /api/listings/:id
 GET    /api/listings/my/listings
 ```
 
+Also: `/api/listings/categories`, `/api/listings/:id/availability`, `/api/listings/seller/listings`, `/api/listings/seller/stats`
+
 ## Bookings
 
-```http id="n2v8hr"
+```http
 POST  /bookings
 GET   /bookings/my-bookings
 PATCH /bookings/:id/cancel
 ```
 
+Also: `/bookings/check-availability`, `/bookings/calculate-price`, `/bookings/check-eligibility`, `/bookings/verify-guests`, `/bookings/upload-document`, `/bookings/documents`, `/bookings/wishlist`, `/bookings/buyer/stats`, `/bookings/:id/payment-status`
+
 ## Payments
 
-```http id="q1z4um"
+```http
 POST /api/payments/create
 ```
+
+Also: `/api/payments/:bookingId/status`
 
 ---
 
 # 🚀 Deployment
 
-Currently live on:
-
-* **Frontend** → Render (Static Site)
-* **Backend (4 services)** → Render (Docker Web Services)
-* **Database** → Neon (managed Postgres)
-
-
-This project can also be deployed on:
-
-* Vercel (Frontend)
-* AWS
-* Railway
-* Docker VPS
-
+Each service and the frontend has its own `Dockerfile`, so the project can be deployed on Render, Railway, AWS or any Docker host. Set the environment variables above, run `db/init.sql` once against your database, and point the frontend's `VITE_*` variables at the deployed service URLs.
 
 ---
 
 # 📈 Future Improvements
 
-* Real payment gateway integration
-* Notifications (Email / SMS)
-* Reviews & Ratings
-* Admin Dashboard
-* Kubernetes deployment
-* API Gateway
-* CI/CD pipelines
-
----
-
-# 👨‍💻 Why This Project Matters
-
-This project demonstrates real backend engineering skills:
-
-* Building scalable systems
-* Working with databases
-* Handling concurrency
-* Designing secure APIs
-* Full-stack product deployment
+* Redis caching and idempotency keys for booking requests
+* Row-level locking for stronger double-booking protection
+* Notifications (email / SMS)
+* Reviews and ratings
+* Admin dashboard
+* API gateway
+* CI/CD pipeline
+* Automated tests
 
 ---
 
 # 📬 Contact
 
-If you'd like to collaborate or discuss backend engineering, feel free to connect.
-
----
-
-# ⭐ If you like this project
-
-Give it a star on GitHub ⭐
-
----
-
-Built with passion, debugging, and persistence.
+**Yashi Upmanyu** · [LinkedIn](https://www.linkedin.com/in/yashi-upmanyu/) · [GitHub](https://github.com/YashiUpmanyu25)
